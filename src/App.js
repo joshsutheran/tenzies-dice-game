@@ -1,24 +1,44 @@
-import logo from './logo.svg';
+// Import CSS Styles
 import './App.css';
+// Import Components
+import Die from './components/die';
+//Import React
+import React, { useState } from 'react'
+import {nanoid} from 'nanoid'
 
 function App() {
+  const [dice, setDice] = useState(allNewDice())
+
+  function allNewDice() {
+    let newDice = []
+    for (let i = 0; i < 10; i++) {
+      newDice.push({
+        value: Math.ceil(Math.random() * 6),
+        isHeld: true,
+        id: nanoid()
+      })
+    }
+    return newDice
+  }
+
+  function handleRollClick() {
+    setDice(allNewDice())
+  }
+
+  function holdDice(id) {
+  }
+
+  const diceElements = dice.map(die => (
+    <Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)} />
+))
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <div className='game__grid'>
+        {diceElements}
+      </div>
+      <button onClick={handleRollClick} className='roll__btn'>Roll</button>
+    </main>
   );
 }
 
