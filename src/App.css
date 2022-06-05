@@ -103,5 +103,10 @@ main {
   
   .roll__btn {
     font-size: 6vw;
+    width: 50%;
+  }
+
+  .score {
+    font-size: 4vw;
   }
 }
