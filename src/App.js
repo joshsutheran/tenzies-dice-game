@@ -8,9 +8,12 @@ import { nanoid } from "nanoid";
 import Confetti from "react-confetti";
 
 function App() {
+  ///Generate State
   const [dice, setDice] = React.useState(allNewDice());
   const [tenzies, setTenzies] = React.useState(false);
-
+  const [currentScore, setCurrentScore] = React.useState(0)
+  const [highScore, setHighScore] = React.useState(0)
+  // Use Effect to check for game win
   React.useEffect(() => {
     const allHeld = dice.every((die) => die.isHeld);
     const firstValue = dice[0].value;
@@ -19,7 +22,7 @@ function App() {
       setTenzies(true);
     }
   }, [dice]);
-
+  // Generate new die - helper function
   function generateNewDie() {
     return {
       value: Math.ceil(Math.random() * 6),
@@ -27,7 +30,7 @@ function App() {
       id: nanoid(),
     };
   }
-
+  // Creates 10 new die
   function allNewDice() {
     const newDice = [];
     for (let i = 0; i < 10; i++) {
@@ -35,20 +38,25 @@ function App() {
     }
     return newDice;
   }
-
+  // Roll dice - boolean controls flow of game
   function rollDice() {
     if (!tenzies) {
+      setCurrentScore(currentScore => currentScore + 1)
       setDice((oldDice) =>
         oldDice.map((die) => {
           return die.isHeld ? die : generateNewDie();
         })
       );
     } else {
-      setTenzies(false)
-      setDice(allNewDice())
+      setTenzies(false);
+      setDice(allNewDice());
+      if(highScore === 0 || currentScore < highScore) {
+        setHighScore(currentScore)
+      }
+      setCurrentScore(0)
     }
   }
-
+  // Holds selected die
   function holdDice(id) {
     setDice((oldDice) =>
       oldDice.map((die) => {
@@ -56,7 +64,7 @@ function App() {
       })
     );
   }
-
+  // Renders dice elements
   const diceElements = dice.map((die) => (
     <Die
       key={die.id}
@@ -65,7 +73,7 @@ function App() {
       holdDice={() => holdDice(die.id)}
     />
   ));
-
+  // Returns game
   return (
     <main>
       {tenzies && <Confetti />}
@@ -75,9 +83,15 @@ function App() {
         current value between rolls.
       </p>
       <div className="game__grid">{diceElements}</div>
-      <button className="roll__btn" onClick={rollDice}>
-        {tenzies ? "New Game" : "Roll"}
-      </button>
+      <div className="bottom__features">
+        <button className="roll__btn" onClick={rollDice}>
+          {tenzies ? "New Game" : "Roll"}
+        </button>
+        <div className="score">
+          <h4>Score: {currentScore}</h4>
+          <h4>High Score: {highScore}</h4>
+        </div>
+      </div>
     </main>
   );
 }
